@@ -53,6 +53,16 @@ webcam  = args.webcam
 #upper_orange = np.array([190, 255, 255])
 lower_orange = np.array([160, 0, 127])
 upper_orange = np.array([220, 255, 255])
+h_min= 23
+h_max= 33
+s_min= 85
+s_max= 255
+v_min= 115
+v_max= 255
+
+
+lower_orange = np.array([h_min, s_min, v_min])
+upper_orange = np.array([h_max, s_max, v_max])
 
 stream, width, height = open_stream(webcam)
 cutoff_width  = width/5
