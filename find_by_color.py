@@ -5,6 +5,13 @@
 import cv2
 import numpy as np
 import argparse
+try:
+    import tkinter
+except:
+    import sys
+    print ("tkinter not installed. Please install using:")
+    print ("sudo apt-get install python3-tk")
+    sys.exit()
 
 def find_object_by_color(image, lower_color, upper_color):
     # Convert the image to the HSV color space
@@ -43,6 +50,10 @@ def get_an_image(stream):
     _, frame = stream.read()          # Capture frame
     return(frame)
 
+# Empty callback function required for trackbar creation
+def empty(a):
+    pass
+
 parser  = argparse.ArgumentParser()
 parser.add_argument("--webcam", required=True, type=int, help="webcam number")
 args    = parser.parse_args()
@@ -53,11 +64,11 @@ webcam  = args.webcam
 #upper_orange = np.array([190, 255, 255])
 lower_orange = np.array([160, 0, 127])
 upper_orange = np.array([220, 255, 255])
-h_min= 23
-h_max= 33
-s_min= 85
-s_max= 255
-v_min= 115
+h_min= 0
+h_max= 32
+s_min= 58
+s_max= 215
+v_min= 90
 v_max= 255
 
 
