@@ -3,6 +3,9 @@ import sys
 import numpy as np
 from pprint import pprint
 
+from cv2 import WINDOW_NORMAL
+
+
 def open_stream(webcam):
     stream = cv2.VideoCapture(webcam)  # Initialize webcam
     width  = stream.get(cv2.CAP_PROP_FRAME_WIDTH)
@@ -12,6 +15,17 @@ def open_stream(webcam):
 def fetch_frame(stream):
     ret, frame = stream.read()          # Capture frame
     return(frame)
+
+def on_mouse(event, x, y, flags, param):
+    # Check if the event was the left mouse button being clicked 
+    if event == cv2.EVENT_LBUTTONDOWN:
+        # Get the BGR pixel value at the clicked location
+        pixel = frame[y, x]
+
+        # Convert BGR to HSV and print the pixel value
+        hsv_pixel = cv2.cvtColor(np.uint8([[pixel]]), cv2.COLOR_BGR2HSV)
+        print("HSV:", hsv_pixel[0][0])
+        print(hsv_pixel)
 
 def find_object_by_color(image, lower_color, upper_color):
     # Convert the image to the HSV color space
@@ -118,6 +132,8 @@ if __name__ == '__main__':
     cutoff_height = height/2
     while True:                       # Repeat the following until "q" key hit
         frame = fetch_frame(cap)
+        cv2.namedWindow('Webcam', WINDOW_NORMAL)
+        cv2.setMouseCallback('Webcam', on_mouse)
         lower_HSV = np.array([tuner.h[0],tuner.s[0],tuner.v[0]])
         upper_HSV = np.array([tuner.h[1],tuner.s[1],tuner.v[1]])
         contour_list = find_object_by_color(frame, lower_HSV, upper_HSV)
