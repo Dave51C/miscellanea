@@ -5,6 +5,9 @@ from pprint import pprint
 
 from cv2 import WINDOW_NORMAL
 
+HSV       = np.array([0,0,0])
+lower_HSV = np.array([0, 0, 0])
+upper_HSV = np.array([0, 0, 0])
 
 def open_stream(webcam):
     stream = cv2.VideoCapture(webcam)  # Initialize webcam
@@ -17,6 +20,7 @@ def fetch_frame(stream):
     return(frame)
 
 def on_mouse(event, x, y, flags, param):
+    global HSV
     # Check if the event was the left mouse button being clicked 
     if event == cv2.EVENT_LBUTTONDOWN:
         # Get the BGR pixel value at the clicked location
@@ -24,8 +28,17 @@ def on_mouse(event, x, y, flags, param):
 
         # Convert BGR to HSV and print the pixel value
         hsv_pixel = cv2.cvtColor(np.uint8([[pixel]]), cv2.COLOR_BGR2HSV)
-        print("HSV:", hsv_pixel[0][0])
-        print(hsv_pixel)
+        HSV = hsv_pixel[0][0]
+
+def set_initial_color():
+    clicked = False
+    while not clicked:
+        frame = fetch_frame(cap)
+        cv2.setMouseCallback('Webcam', on_mouse)
+        cv2.imshow('Webcam', frame)              # Display frame
+        clicked = True
+        print (HSV)
+    
 
 def find_object_by_color(image, lower_color, upper_color):
     # Convert the image to the HSV color space
@@ -109,31 +122,35 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--device", type=int, help="video device number", default=0)
     args = parser.parse_args()
-    app = QApplication(sys.argv)
-    tuner = HSVTuner()
-    print(tuner.__dict__.keys())
-    pprint(tuner.h)
-    tuner.show()
-    h_min= 0
-    h_max= 32
-    s_min= 58
-    s_max= 215
-    v_min= 90
-    v_max= 255
-    lower_HSV = np.array([h_min, s_min, v_min])
-    upper_HSV = np.array([h_max, s_max, v_max])
-
-    lower_HSV = np.array([0, 100, 167])
-    upper_HSV = np.array([5, 213, 255])
-
 
     cap,width,height = open_stream(args.device)
-    cutoff_width = width/2
-    cutoff_height = height/2
+    cutoff_width     = width/2
+    cutoff_height    = height/2
+    cv2.namedWindow('Webcam', WINDOW_NORMAL)
+    app          = QApplication(sys.argv)
+    tuner        = HSVTuner()
+    print(tuner.__dict__)
+    print(tuner.__dict__.keys())
+    set_initial_color()
+    lower_HSV[0] = min(0,HSV[0]-10)
+    lower_HSV[1] = min(0,HSV[1]-10)
+    lower_HSV[2] = min(0,HSV[2]-10)
+    upper_HSV[0] = max(179,HSV[0]+10)
+    upper_HSV[1] = max(255,HSV[1]+10)
+    upper_HSV[2] = max(255,HSV[2]+10)
+    #print (HSV)
+    print (lower_HSV)
+    print (tuner.h)
+    tuner.h_slider = (lower_HSV[0],upper_HSV[0])
+    tuner.s_slider = (lower_HSV[1],upper_HSV[1])
+    tuner.v_slider = (lower_HSV[2],upper_HSV[2])
+    print (tuner.h)
+    print (tuner.get_ranges())
+    tuner.show()
+
     while True:                       # Repeat the following until "q" key hit
         frame = fetch_frame(cap)
-        cv2.namedWindow('Webcam', WINDOW_NORMAL)
-        cv2.setMouseCallback('Webcam', on_mouse)
+        #cv2.setMouseCallback('Webcam', on_mouse)
         lower_HSV = np.array([tuner.h[0],tuner.s[0],tuner.v[0]])
         upper_HSV = np.array([tuner.h[1],tuner.s[1],tuner.v[1]])
         contour_list = find_object_by_color(frame, lower_HSV, upper_HSV)
@@ -148,4 +165,3 @@ if __name__ == '__main__':
             break
     cap.release()                     # Release the webcam
     cv2.destroyAllWindows()           # Close the window
-
