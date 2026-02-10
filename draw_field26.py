@@ -15,7 +15,7 @@ subCamWorldR = CamPos_tbl.getDoubleTopic("Robot_Rot").subscribe(-1)
 subRobotWorldX = CamPos_tbl.getDoubleTopic("Robot_X").subscribe(-1)
 subRobotWorldY = CamPos_tbl.getDoubleTopic("Robot_Y").subscribe(-1)
 
-img = np.zeros((600, 800, 3), dtype='uint8')
+img = np.zeros((600, 800, 3), dtype='uint')
 fieldwall = np.array([
     [ 50,50 ]
    ,[ 701,50 ]
@@ -131,5 +131,9 @@ cv2.polylines(img, [bluetower], 1, BLUEg, 2)
 winname = 'example'
 cv2.namedWindow(winname)
 cv2.imshow(winname, img)
+while True:
+    RobotX = round (subRobotWorldX.get())
+    RobotY = round (subRobotWorldY.get())
+    cv2.circle (img,(RobotX,RobotY),10,RED,-1)
 cv2.waitKey()
 cv2.destroyWindow(winname)
