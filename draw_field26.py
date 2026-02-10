@@ -1,5 +1,19 @@
 import cv2
 import numpy as np
+from ntcore import NetworkTableInstance
+
+IP='localhost'
+
+print (IP)
+ntinst       = NetworkTableInstance.getDefault()
+ntinst.setServer(IP)
+ntinst.startClient4("Tracker")
+CamPos_tbl   = ntinst.getTable("CamPos")
+subCamWorldX = CamPos_tbl.getDoubleTopic("Camera_X").subscribe(-1)
+subCamWorldY = CamPos_tbl.getDoubleTopic("Camera_Y").subscribe(-1)
+subCamWorldR = CamPos_tbl.getDoubleTopic("Robot_Rot").subscribe(-1)
+subRobotWorldX = CamPos_tbl.getDoubleTopic("Robot_X").subscribe(-1)
+subRobotWorldY = CamPos_tbl.getDoubleTopic("Robot_Y").subscribe(-1)
 
 img = np.zeros((600, 800, 3), dtype='uint8')
 fieldwall = np.array([
